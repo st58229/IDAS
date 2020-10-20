@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="457.0" prefWidth="398.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.StudentGUIController">
+   <children>
+      <AnchorPane id="AnchorPane" layoutX="10.0" layoutY="10.0" prefHeight="434.0" prefWidth="384.0">
+         <children>
+            <ComboBox fx:id="Combo_ZvolenyPredmet" layoutX="16.0" layoutY="14.0" prefHeight="25.0" prefWidth="349.0" promptText="Zvolte předmět" />
+            <Button fx:id="btn_ZobrazitKvizy" layoutX="16.0" layoutY="400.0" mnemonicParsing="false" onAction="#ZobrazKvizy_Clicked" prefHeight="25.0" prefWidth="150.0" text="Zobrazit kvízy předmětu" />
+            <Button fx:id="btn_ZobrazDiskusi" layoutX="299.0" layoutY="400.0" mnemonicParsing="false" onAction="#ZobrazDiskusi_Clicked" prefHeight="25.0" prefWidth="64.0" text="Diskuse" />
+            <ListView fx:id="materialyVypis_tabulka" layoutX="14.0" layoutY="52.0" prefHeight="335.0" prefWidth="349.0" />
+            <Button fx:id="btn_Dowload" layoutX="177.0" layoutY="400.0" mnemonicParsing="false" onAction="#DownloadMaterial" prefHeight="25.0" prefWidth="111.0" text="Stáhnout materiál" />
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>

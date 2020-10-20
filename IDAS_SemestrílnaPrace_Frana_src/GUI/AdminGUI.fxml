@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" fx:id="pane" prefHeight="523.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.AdminGUIController">
+   <children>
+      <ComboBox fx:id="Combo_AktualniTable" layoutX="209.0" layoutY="14.0" onAction="#Combo_Table_Select" prefHeight="25.0" prefWidth="183.0" promptText="Zvolte tabulku k zobrazení" />
+      <Label layoutX="14.0" layoutY="16.0" text="Aktuálně zobrazená tabulka:">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <AnchorPane layoutX="14.0" layoutY="385.0" maxWidth="569.0" minWidth="569.0" prefHeight="121.0" prefWidth="569.0" style="-fx-background-color: #d6cec9;">
+         <children>
+            <Button fx:id="Btn_Submit" layoutX="153.0" layoutY="82.0" mnemonicParsing="false" onAction="#Submit_Clicked" text="Odeslat příkazy z řádku ke zpracování databází" />
+            <Label layoutX="14.0" text="Příkazový řádek SQL">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <TextArea fx:id="textArea_CmdLine" layoutX="11.0" layoutY="21.0" prefHeight="54.0" prefWidth="548.0" promptText="Pokročilá funkcionalita! Použití jen s rozmyslem a nutnou dávkou znalostí SQL." />
+         </children>
+      </AnchorPane>
+      <Button fx:id="Btn_Pridat" layoutX="14.0" layoutY="344.0" mnemonicParsing="false" onAction="#Pridat_Clicked" text="Přidat" />
+      <Button fx:id="Btn_odeberAktualni" layoutX="71.0" layoutY="344.0" mnemonicParsing="false" onAction="#OdeberZvolene_Clicked" text="Odebrat zvolené" />
+      <ListView fx:id="listView_Tabulka" layoutX="14.0" layoutY="47.0" prefHeight="291.0" prefWidth="569.0" />
+      <Button fx:id="Btn_aktualizujAktualni" layoutX="185.0" layoutY="344.0" mnemonicParsing="false" onAction="#EditujZvolene_Clicked" text="Editovat zvolené" />
+      <Button fx:id="btn_Download" layoutX="478.0" layoutY="344.0" mnemonicParsing="false" onAction="#DownloadFile" text="Stáhnout soubor" />
+   </children>
+</AnchorPane>

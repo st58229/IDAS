@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane id="AnchorPane" prefHeight="472.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="GUI.PriraditUzivateliPredmetGUIController">
+   <children>
+      <ListView fx:id="listWievUZIVATELE" layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="576.0" />
+      <ListView fx:id="listwievPREDMETY" layoutX="14.0" layoutY="226.0" prefHeight="200.0" prefWidth="576.0" />
+      <Button fx:id="pridatkPredmeu" layoutX="14.0" layoutY="435.0" mnemonicParsing="false" onAction="#PridatUzivateleKPredmetu" text="Přidat k předmětu" />
+      <Button fx:id="odebratUzivateleodPredmetu" layoutX="137.0" layoutY="435.0" mnemonicParsing="false" onAction="#OdebratUzivateleodPredmetu" text="Odebrat uživatele předmětu" />
+   </children>
+</AnchorPane>

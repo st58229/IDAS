@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane id="AnchorPane" prefHeight="224.0" prefWidth="413.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="GUI.UserDetailWindowController">
+   <children>
+      <BorderPane layoutX="14.0" layoutY="14.0" maxHeight="200.0" maxWidth="200.0" minHeight="200.0" minWidth="200.0" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black;">
+         <center>
+            <ImageView fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER" />
+         </center>
+      </BorderPane>
+      <Label layoutX="222.0" layoutY="14.0" text="Jan Novák" />
+      <Label layoutX="222.0" layoutY="41.0" text="domena@email.cz" />
+   </children>
+</AnchorPane>

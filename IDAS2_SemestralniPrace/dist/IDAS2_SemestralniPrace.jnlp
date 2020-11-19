@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="IDAS2_SemestralniPrace.jnlp">
+  <information>
+    <title>IDAS2_SemestralniPrace</title>
+    <vendor>st58229</vendor>
+    <description>null</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="IDAS2_SemestralniPrace.jar" size="68034" download="eager" />
+    <jar href="lib\javax.mail.jar" size="659033" download="eager" />
+    <jar href="lib\junit-4.12.jar" size="316791" download="eager" />
+    <jar href="lib\ojdbc7.jar" size="3397734" download="eager" />
+  </resources>
+  <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="IDAS2_SemestralniPrace" >
+    <param name="requiredFXVersion" value="8.0+"/>
+  </applet-desc>
+  <jfx:javafx-desc  width="800" height="600" main-class="GUI.IDAS2_SemestralniPrace"  name="IDAS2_SemestralniPrace" />
+  <update check="always"/>
+</jnlp>

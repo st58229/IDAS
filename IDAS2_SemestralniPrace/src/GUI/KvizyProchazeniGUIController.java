@@ -85,8 +85,7 @@ public class KvizyProchazeniGUIController implements Initializable {
             btn_OdstraneniKvizu.setVisible(false);
             btn_VyplnitKviz.setDisable(true);
             btn_pridatKviz.setVisible(false);
-        }
-        
+        }        
     }    
 
     @FXML

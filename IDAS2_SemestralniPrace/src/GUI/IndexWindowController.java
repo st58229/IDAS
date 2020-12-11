@@ -611,7 +611,7 @@ public class IndexWindowController implements Initializable {
             return;
         }
         
-        if (logedUser.getRole_id_role() == 1 || logedUser.getRole_id_role() == 0) {
+        if (logedUser.getRole_id_role() == 3 || logedUser.getRole_id_role() == 0) {
             
              disableForStudent(true);            
         }

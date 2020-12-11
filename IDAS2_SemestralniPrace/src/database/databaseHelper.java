@@ -917,15 +917,16 @@ public class databaseHelper {
     public void insertUzivatel(String username, String password, String jmeno, 
             String Prijmeni, int role_id_role, String email) throws SQLException {
         Connection conn = OracleConnector.getConnection();
-        PreparedStatement stmt = conn.prepareStatement(SQLCommands.INSERT_UZIVATEL_all);
+        CallableStatement stmt = conn.prepareCall("BEGIN UZIVATEL_INSRT_UPD(?, ?, ?, ?, ?, ?, ?); END;");
         stmt.setString(1, username);
         stmt.setString(2, password);
         stmt.setNString(3, jmeno);
         stmt.setNString(4, Prijmeni);
         stmt.setInt(5, role_id_role); 
         stmt.setInt(6, 1); // Defaultní avatar 1 (Administrátor nenahrává obrázky)
+        if (email == null) email = "unknow@email.com";
         stmt.setString(7, email);
-        stmt.executeUpdate();
+        stmt.execute();
         conn.commit();        
     }
     
@@ -946,7 +947,7 @@ public class databaseHelper {
             String cesta_k_souboru, String typ_souboru, int pocet_stran, 
             Date platnost_do, Date datum_vytvoreni, String vytvoren_uziv, int predmety_id_predmet) throws SQLException {
         Connection conn = OracleConnector.getConnection();
-        PreparedStatement stmt = conn.prepareStatement(SQLCommands.INSERT_MATERIAL);
+        CallableStatement stmt = conn.prepareCall("BEGIN MATERIALY_INSRT_UPD(? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); END;");
         stmt.setString(1, Nazev);
         stmt.setBinaryStream(2, Soubor);
         stmt.setString(3, cesta_k_souboru);
@@ -955,8 +956,11 @@ public class databaseHelper {
         stmt.setDate(6, platnost_do);
         stmt.setDate(7, datum_vytvoreni);
         stmt.setString(8, vytvoren_uziv);
-        stmt.setInt(9, predmety_id_predmet);
-        stmt.executeUpdate();
+        stmt.setNull(9, java.sql.Types.VARCHAR);
+        stmt.setNull(10, java.sql.Types.DATE);
+        stmt.setInt(11, predmety_id_predmet);
+        stmt.setInt(12, 0);
+        stmt.execute();
         conn.commit();        
     }
     
@@ -1044,7 +1048,7 @@ public class databaseHelper {
      */
     public void insertPredmet(String nazev, String zkratka, String semestr, String rocnik) throws SQLException {
         Connection conn = OracleConnector.getConnection();
-        PreparedStatement stmt = conn.prepareStatement(SQLCommands.INSERT_PREDMET_all);
+        CallableStatement stmt = conn.prepareCall("BEGIN PREDMET_INSRT_UPD(?, ?, ?, ?); END;");
         stmt.setString(1, nazev);
         stmt.setNString(2, zkratka);
         stmt.setNString(3, semestr);

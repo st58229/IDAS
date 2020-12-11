@@ -54,6 +54,7 @@ public class DiskuseGUIController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         if (logedUser.getRole_id_role() == 3) {            
             btn_Odebrat.setVisible(false);
+            btn_Odpoved.setVisible(false);
         }
         
         OknoKomentaru.setOnMouseClicked((MouseEvent click) -> {

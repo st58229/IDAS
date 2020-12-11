@@ -2,6 +2,7 @@ package GUI;
 
 import GUI.controller.GeneratorDialogu;
 import GUI.controller.DataLoader;
+import GUI.controller.KvizyGUIsprava;
 import data.Avatar;
 import data.Kat_otazek;
 import data.Kat_st_mat;
@@ -890,7 +891,9 @@ public class IndexWindowController implements Initializable {
     
     @FXML
     private void btn_NapsatZpravu_Clicked(ActionEvent event) {
-        //TODO Přesměruje na ZPRÁVY, kde mu to zvolí toho učitele v seznamu
+        Uzivatel selected = lstView_Ucitele.getSelectionModel().getSelectedItem();
+                lst_UzivatelZpravy.getSelectionModel().select(selected);
+                tabPane.getSelectionModel().select(tab_zpravy);
     }
 
     

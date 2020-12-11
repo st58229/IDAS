@@ -27,7 +27,6 @@ import java.text.SimpleDateFormat;
 import java.util.logging.SimpleFormatter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import oracle.sql.TIMESTAMP;
 
 /**
  * Třída sloužící jako knihovna 
@@ -365,13 +364,13 @@ public class databaseHelper {
         return users;
     }
     
-    public void insertKvizHistorie (int id_user,int id_kviz, String score) throws SQLException{
+    public void insertKvizHistorie (int id_user,int id_kviz, int score) throws SQLException{
         
         Connection conn = OracleConnector.getConnection();
         PreparedStatement stmt = conn.prepareStatement(SQLCommands.INSERT_historieKviz);
         stmt.setInt(1, id_user);
         stmt.setInt(2, id_kviz);
-        stmt.setNString(3, score);
+        stmt.setInt(3, score);
         stmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
         stmt.executeUpdate();
         conn.commit();        
@@ -1718,9 +1717,10 @@ public class databaseHelper {
     public double getUspesnostKvizu(int id_uzivatel, int id_kviz) throws SQLException {
         Connection conn = OracleConnector.getConnection();
         CallableStatement stmt = conn.prepareCall("{ ? = call VYPOCET_PRUMERNYCH_BODU("+id_kviz+", "+id_uzivatel+") }");
-        stmt.registerOutParameter(1, java.sql.Types.NUMERIC);        
-        if (stmt.execute()) return stmt.getDouble(1); 
-        return 0;
+        stmt.registerOutParameter(1, java.sql.Types.NUMERIC); 
+        stmt.execute();
+        return stmt.getDouble(1); 
+        //return -1;
         //TODO nefunguje
     }
 

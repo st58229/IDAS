@@ -11,12 +11,16 @@ import static GUI.IndexWindowController.dh;
 import static GUI.IndexWindowController.login;
 import static GUI.IndexWindowController.logedUser;  
 import static GUI.IndexWindowController.selectedMaterial;  
+import GUI.controller.GeneratorDialogu;
 import data.Kvizy;
 import data.Otazky;
 import data.Otazky_kvizu;
 import data.StudijniMaterial;
 import java.net.URL;
+import java.sql.Date;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,6 +52,8 @@ public class KvizyProchazeniGUIController implements Initializable {
     Kvizy selectedKviz;
     @FXML
     private Label lbl_prumerKvizu;
+    @FXML
+    private Button btn_pridatKviz;
 
     /**
      * Initializes the controller class.
@@ -55,7 +61,8 @@ public class KvizyProchazeniGUIController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {        
         if (logedUser.getRole_id_role() == 3) {            
-            btn_OdstraneniKvizu.setDisable(true);
+            btn_OdstraneniKvizu.setVisible(false);
+            btn_pridatKviz.setVisible(false);
         }
     
         try {
@@ -77,6 +84,7 @@ public class KvizyProchazeniGUIController implements Initializable {
         if (logedUser.getRole_id_role() == 0) {
             btn_OdstraneniKvizu.setVisible(false);
             btn_VyplnitKviz.setDisable(true);
+            btn_pridatKviz.setVisible(false);
         }
         
     }    
@@ -136,8 +144,73 @@ public class KvizyProchazeniGUIController implements Initializable {
         //TODO refresh dat do listView z tabulky na DB
         System.out.println(kviz.getVysledekKvizu()); 
         
-        dh.insertKvizHistorie(logedUser.getId_uzivatel(), selectedKviz.getId_kviz(), Integer.toString(kviz.getVysledekKvizu())+ " bodů");
+        dh.insertKvizHistorie(logedUser.getId_uzivatel(), selectedKviz.getId_kviz(), kviz.getVysledekKvizu());
         lst_HistorieKvizu.refresh();
+    }
+    
+    @FXML
+    private void VytvorKviz_Clicked(ActionEvent event) throws SQLException {        
+        GeneratorDialogu dialog = new GeneratorDialogu();
+        ObservableList<String> hodnoty = FXCollections.observableArrayList();
+
+        LocalDate dateKviz = LocalDate.now();
+        dateKviz.format(DateTimeFormatter.ISO_DATE);
+
+        hodnoty.addAll(
+                "string", "NAZEV", "",
+                "string", "POPIS", "",
+                "string", "DATUM_OD", dateKviz.toString(),
+                "string", "DATUM_DO", dateKviz.plusWeeks(1).toString()
+        );
+        ObservableList<String> data_kvizy = FXCollections.observableArrayList();
+        data_kvizy.addAll(dialog.createDialog(hodnoty));
+
+        // Převod stringu na LocalDate a ten pak na Date
+        Date datumOd = Date.valueOf(LocalDate.parse(data_kvizy.get(3), DateTimeFormatter.ISO_DATE));
+        Date datumDo = Date.valueOf(LocalDate.parse(data_kvizy.get(4), DateTimeFormatter.ISO_DATE));
+
+        dh.insertKvizy(data_kvizy.get(1), data_kvizy.get(2),
+                datumOd, datumDo, selectedMaterial.getId_stud_mat());
+
+        KvizyGUIsprava kvizy = new KvizyGUIsprava();
+        ObservableList<String> kvizString = FXCollections.observableArrayList();
+        kvizString.addAll(kvizy.vytvoritKviz());
+
+        // Tohle je id posledního (našeho) kvítu takže otázkly budou mít toto ID;
+        int IDkvizu = dh.getLastNumberofSequence("SEQ_KVIZY_ID") - 1;
+
+        int i = 0;
+        try {
+            while (true) {
+                if (kvizString.get(i).equals("otevrena")) {
+                    String obsah
+                            = kvizString.get(i + 2) + ";"
+                            + // Odpoved
+                            kvizString.get(i + 3);            // Body
+                    dh.insertOtazky(1, kvizString.get(i + 1), obsah);
+                    i += 4;  //Iterace indexu v řetezci Stringu              
+                } else if (kvizString.get(i).equals("uzavrena")) {
+                    String obsah
+                            = kvizString.get(i + 2) + ";"
+                            + // Odpoved 1
+                            kvizString.get(i + 3) + ";"
+                            + // Odpoved 2
+                            kvizString.get(i + 4) + ";"
+                            + // Odpoved 3
+                            kvizString.get(i + 5) + ";"
+                            + // Odpoved 4
+                            kvizString.get(i + 6) + ";"
+                            + // Cislo (index) spravne odpovedi
+                            kvizString.get(i + 7);            // Body
+                    dh.insertOtazky(2, kvizString.get(i + 1), obsah);
+                    i += 8; // Iterace indexu v řetezci Stringu
+                }
+
+                int idOtazky = dh.getLastNumberofSequence("SEQ_OTAZKY_ID") - 1;
+                dh.insertOtazkyKvizu(IDkvizu, idOtazky);
+            }
+        } catch (Exception e) {
+        }
     }
     
 }

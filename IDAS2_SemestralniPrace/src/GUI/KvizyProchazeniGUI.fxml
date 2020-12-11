@@ -8,10 +8,11 @@
 
 <AnchorPane id="AnchorPane" prefHeight="433.0" prefWidth="528.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.KvizyProchazeniGUIController">
    <children>
-      <ListView fx:id="ZobrazeniKvizu" layoutX="17.0" layoutY="14.0" prefHeight="327.0" prefWidth="287.0" />
+      <ListView fx:id="ZobrazeniKvizu" layoutX="17.0" layoutY="14.0" prefHeight="305.0" prefWidth="287.0" />
       <Button fx:id="btn_OdstraneniKvizu" layoutX="17.0" layoutY="394.0" mnemonicParsing="false" onAction="#OdstranitKviz_Clicked" prefHeight="25.0" prefWidth="287.0" text="Odstranit kvíz" />
-      <Button fx:id="btn_VyplnitKviz" layoutX="17.0" layoutY="349.0" mnemonicParsing="false" onAction="#VyplnitKviz_Clicked" prefHeight="25.0" prefWidth="287.0" text="Vyplnit kvíz" />
+      <Button fx:id="btn_VyplnitKviz" layoutX="17.0" layoutY="334.0" mnemonicParsing="false" onAction="#VyplnitKviz_Clicked" prefHeight="25.0" prefWidth="287.0" text="Vyplnit kvíz" />
       <ListView fx:id="lst_HistorieKvizu" layoutX="314.0" layoutY="14.0" prefHeight="385.0" prefWidth="200.0" />
       <Label fx:id="lbl_prumerKvizu" layoutX="339.0" layoutY="398.0" text="Průměrná úspěšnost je: #fcn" />
+      <Button fx:id="btn_pridatKviz" layoutX="17.0" layoutY="369.0" mnemonicParsing="false" onAction="#VytvorKviz_Clicked" prefHeight="25.0" prefWidth="287.0" text="Přidat kvíz" />
    </children>
 </AnchorPane>

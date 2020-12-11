@@ -14,22 +14,20 @@ import data.Role;
 import data.StudijniMaterial;
 import data.Uzivatel;
 
-import java.awt.image.RenderedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.logging.SimpleFormatter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javax.imageio.ImageIO;
+import oracle.sql.TIMESTAMP;
 
 /**
  * Třída sloužící jako knihovna 
@@ -186,6 +184,44 @@ public class databaseHelper {
         return materialy;
     }
     
+    public ObservableList<StudijniMaterial> getStudijniMaterialyPredmetuPripona(int id_predmet, String selectedItem) throws SQLException {
+        ObservableList<StudijniMaterial> materialy = FXCollections.observableArrayList();
+
+        Connection conn = OracleConnector.getConnection();
+        String pohled = "STUDIJNI_MATERIALY";
+        switch(selectedItem)
+        {
+            case ".txt":
+                pohled = "MAT_TXT";
+                break;
+            case ".pdf":
+                pohled = "MAT_PDF";
+                break;
+            case ".docx":
+                pohled = "MAT_DOCX";
+            break;
+        }
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM "+pohled+" WHERE PREDMETY_ID_PREDMET = " + id_predmet);
+        ResultSet rset = stmt.executeQuery();
+        while (rset.next()) {
+            materialy.add(new StudijniMaterial(rset.getInt(1),      //ID_STUD_MAT           PK
+                                               rset.getString(2),   // NAZEV
+                                               rset.getBlob(3),     // SOUBOR
+                                               rset.getString(4),   // CESTA_K_SOUBORU
+                                               rset.getString(5),   // TYP_SOUBORU
+                                               rset.getInt(6),      // POCET_STRAN
+                                               rset.getNString(7),  // POPIS
+                                               rset.getDate(8),     // PLATNOST_DO
+                                               rset.getDate(9),     // DATUM_VYTVORENI
+                                               rset.getString(10),  // VYTVOREN_UZIV
+                                               rset.getNString(11), // ZMENEN_UZIV
+                                               rset.getDate(12),    // DATUM_ZMENY
+                                               rset.getInt(13))     // PREDMETY_ID_PREDMET  FK
+                    
+        );}        
+        return materialy;
+    }
+    
     /**
      *
      * @param idMaterialu
@@ -226,7 +262,9 @@ public class databaseHelper {
                                 rset.getNString(2), // NAZEV  
                                 rset.getNString(3), // OBSAH  
                                 rset.getInt(4),     // KOMENTAR_ID_KOMENTAR FK
-                                rset.getInt(5))     // STUDIJNI_MATERIALY_ID_STUD_MAT   FK
+                                rset.getInt(5),     // STUDIJNI_MATERIALY_ID_STUD_MAT   FK
+                                rset.getString(6),
+                                rset.getInt(7))
         );}        
         return kom;
     }
@@ -325,6 +363,80 @@ public class databaseHelper {
                                     rset.getNString(8)  // EMAIL
             ));}        
         return users;
+    }
+    
+    public void insertKvizHistorie (int id_user,int id_kviz, String score) throws SQLException{
+        
+        Connection conn = OracleConnector.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(SQLCommands.INSERT_historieKviz);
+        stmt.setInt(1, id_user);
+        stmt.setInt(2, id_kviz);
+        stmt.setNString(3, score);
+        stmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+        stmt.executeUpdate();
+        conn.commit();        
+    }
+    
+    public ObservableList<String> getHistorieKvizubyUser(int id_uzivatel, int id_kviz) throws SQLException {
+        ObservableList<String> historie = FXCollections.observableArrayList();
+
+        Connection conn = OracleConnector.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(SQLCommands.SELECT_HISTORIEKVIZU_user);
+        stmt.setInt(1, id_uzivatel);
+        stmt.setInt(2, id_kviz);
+        ResultSet rset = stmt.executeQuery();
+        while (rset.next()) historie.add(rset.getString(1) + " ["+ new SimpleDateFormat("dd. MM. yyyy HH:mm:ss").format(rset.getTimestamp(2))+"]");        
+        return historie;
+    }
+     
+    public String getZpravyUzivateleString(int id_sel_user, int id_log_user) throws SQLException {     
+        StringBuilder builder = new StringBuilder();
+
+        Connection conn = OracleConnector.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(SQLCommands.SELECT_ZPRAVY_byusers);
+        stmt.setInt(1, id_sel_user);
+        stmt.setInt(2, id_log_user);
+        stmt.setInt(3, id_sel_user);
+        stmt.setInt(4, id_log_user);
+        ResultSet rset = stmt.executeQuery();
+        
+        while (rset.next()) builder.append("("+getLogin(rset.getInt(1)).trim()+") \t["+new SimpleDateFormat("dd. MM. yyyy HH:mm:ss").format(rset.getTimestamp(3))+"] \t"+ rset.getString(2)+"\n");        
+        return builder.toString();
+    }
+   
+    public void insertZprava(int id_uzivatel_od, int id_uzivatel_pro, String text) throws SQLException {
+        
+        Connection conn = OracleConnector.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(SQLCommands.INSERT_zprava);
+        stmt.setInt(1, id_uzivatel_od);
+        stmt.setInt(2, id_uzivatel_pro);
+        stmt.setString(3, text);
+        stmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+        stmt.executeUpdate();
+        conn.commit(); 
+    }
+    
+    public boolean checkOdpovedKomentare(int id_komentar) throws SQLException {
+        Connection conn = OracleConnector.getConnection();
+        PreparedStatement stmt = conn.prepareStatement("SELECT ODPOVED FROM KOMENTAR WHERE ID_KOMENTAR = '" + id_komentar+"'");
+        ResultSet rset = stmt.executeQuery();
+        while (rset.next()) {
+            if (rset.getNString(1) != null) {
+               return false; 
+            }
+        }
+        return true;
+    }
+
+    public void insertOdpovedKomentare(int id_komentar, String text, int id_odpovidajici) throws SQLException {
+        
+        Connection conn = OracleConnector.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(SQLCommands.UPDATE_OdpovedKomentare);
+        stmt.setString(1, text);
+        stmt.setInt(2, id_odpovidajici);
+        stmt.setInt(3, id_komentar); 
+        stmt.executeUpdate();
+        conn.commit(); 
     }
     
     //  =================================================
@@ -430,6 +542,17 @@ public class databaseHelper {
                                     rset.getNString(8)      // EMAIL
         );}
         return user;       
+    }
+    
+    public String getNazevPredmetu(int predmety_id_predmet) throws SQLException {
+        Connection conn = OracleConnector.getConnection();
+        PreparedStatement stmt = conn.prepareStatement("SELECT NAZEV FROM PREDMETY WHERE ID_PREDMET = " + predmety_id_predmet);
+        ResultSet rset = stmt.executeQuery();
+
+        while (rset.next()) {
+            return rset.getString(1);
+        }        
+        return "Neznámý";  
     }
     
     /**
@@ -646,7 +769,9 @@ public class databaseHelper {
                                 rset.getNString(2), // NAZEV  
                                 rset.getNString(3), // OBSAH  
                                 rset.getInt(4),     // KOMENTAR_ID_KOMENTAR FK
-                                rset.getInt(5))     // STUDIJNI_MATERIALY_ID_STUD_MAT   FK
+                                rset.getInt(5),     // STUDIJNI_MATERIALY_ID_STUD_MAT   FK
+                                rset.getString(6),
+                                rset.getInt(7))
         );}        
         return kom;
     }
@@ -1589,4 +1714,36 @@ public class databaseHelper {
     public void updateKategorieOtazek(Kat_otazek kat) throws SQLException {
         updateKategorieOtazek(kat.getId_kat_otazka(), kat.getNazev(), kat.getPopis());        
     }
+
+    public double getUspesnostKvizu(int id_uzivatel, int id_kviz) throws SQLException {
+        Connection conn = OracleConnector.getConnection();
+        CallableStatement stmt = conn.prepareCall("{ ? = call VYPOCET_PRUMERNYCH_BODU("+id_kviz+", "+id_uzivatel+") }");
+        stmt.registerOutParameter(1, java.sql.Types.NUMERIC);        
+        if (stmt.execute()) return stmt.getDouble(1); 
+        return 0;
+        //TODO nefunguje
+    }
+
+    public String getLogin(int aInt) throws SQLException {
+        Connection conn = OracleConnector.getConnection();
+        PreparedStatement stmt = conn.prepareStatement("SELECT LOGIN FROM UZIVATELE WHERE ID_UZIVATEL = " + aInt);
+        ResultSet rset = stmt.executeQuery();
+
+        while (rset.next()) {
+            return rset.getString(1);
+        }        
+        return "Neznámý"; 
+    }
+
+
+
+
+
+
+
+    
+
+
+
+
 }

@@ -89,11 +89,13 @@ public class IndexWindowController implements Initializable {
     public static Uzivatel logedUser;
     public static databaseHelper dh;
     public static Stage login;
+    public static StudijniMaterial selectedMaterial;
 
     private int avatarID;
     private InputStream avatar;
     private int oldAvatarID = 0;
     private ListView listView_tabule;
+    Uzivatel selectedUserZpravy;
     ObservableList<Predmety> data = FXCollections.observableArrayList();
 
 //<editor-fold defaultstate="collapsed" desc="FXML anotace prvků GUI">
@@ -196,17 +198,28 @@ public class IndexWindowController implements Initializable {
     @FXML
     private Button btn_NapsatZpravu;
     @FXML
-    private Button btn_ZobrazitDetaily;
-    @FXML
     private Button btn_EmulovatUcet;
     @FXML
     private Menu menuItem_Ucet;
     @FXML
     private Button btn_DeleteMaterial;
-//</editor-fold>    
     @FXML
     private Button btn_MaterialPridat;
-
+    @FXML
+    private ListView<Uzivatel> lst_UzivatelZpravy;
+    @FXML
+    private TextArea txtArea_Chat;
+    @FXML
+    private TextField txt_Zprava;
+    @FXML
+    private Button btn_OdeslatZpravu;
+    @FXML
+    private Tab tab_zpravy;
+    @FXML
+    private ComboBox<String> cmd_pripona;
+    @FXML
+    private TextField txt_vyhledavaniNazev;
+//</editor-fold>    
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -290,9 +303,11 @@ public class IndexWindowController implements Initializable {
         btn_ChangeAvatar.disableProperty().setValue(bool);
         btn_SaveChanges.disableProperty().setValue(bool);
         btn_ResetAvatar.disableProperty().setValue(bool);
+        btn_NapsatZpravu.disableProperty().set(bool);
+        btn_OdeslatZpravu.disableProperty().set(bool);
     }
     
-    private void loadMetaMaterial(StudijniMaterial selected){       
+    private void loadMetaMaterial(StudijniMaterial selected) throws SQLException{       
         
         if (selected == null) {
             return;
@@ -307,7 +322,7 @@ public class IndexWindowController implements Initializable {
                         "(" + selected.getZmenen_uziv() + ")");
         }
         label_Mat_Pridal.setText("Přidal: " + selected.getVytvoren_uziv());
-        label_Mat_Predmet.setText("Předmět: " + selected.getPredmety_id_predmet());
+        label_Mat_Predmet.setText("Předmět: " + dh.getNazevPredmetu(selected.getPredmety_id_predmet()));
         label_Mat_VytvorenoKDY.setText("Vytvořeno: " + selected.getDatum_vytvoreni().toString());
         label_Mat_Strany.setText("Počet stran: " + selected.getPocet_stran());
            
@@ -321,7 +336,8 @@ public class IndexWindowController implements Initializable {
                 Graphics2D g = image.createGraphics();
                 icon.paintIcon(null, g, 0, 0);
                 g.dispose();                
-                img_IconMaterial.setImage(SwingFXUtils.toFXImage(image, null));
+                img_IconMaterial.setImage(SwingFXUtils.toFXImage(image, null));              
+                
             } catch (IOException ex) {
                 Logger.getLogger(IndexWindowController.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -613,14 +629,63 @@ public class IndexWindowController implements Initializable {
         //cmb_PredmetFiltr.itemsProperty().setValue(DataLoader.getSubjects());
         cmd_UcitelFiltr.itemsProperty().setValue(DataLoader.getUcitele());
         //lstView_Materialy.getItems().addAll(dh.getStudijniMaterialy());
+        cmd_UcitelFiltr.valueProperty().addListener(e -> {
+            try {
+                material_fresh();
+                cmd_pripona.getSelectionModel().select(0);
+            } catch (SQLException ex) {
+                Logger.getLogger(IndexWindowController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            ObservableList<StudijniMaterial> materialy = FXCollections.observableArrayList();
+            lstView_Materialy.getItems().forEach(t -> {
+                if (t.getVytvoren_uziv() == null ? cmd_UcitelFiltr.getSelectionModel().getSelectedItem().getLogin() == null : t.getVytvoren_uziv().equals(cmd_UcitelFiltr.getSelectionModel().getSelectedItem().getLogin())) {
+                    materialy.add(t);
+                }
+            });
+            lstView_Materialy.getItems().clear();
+            lstView_Materialy.getItems().addAll(materialy);
+        });
         
         lstView_Materialy.getSelectionModel().selectedItemProperty().addListener(t ->{
             StudijniMaterial selected = lstView_Materialy.getSelectionModel().getSelectedItem();
-            loadMetaMaterial(selected);
+            try {
+                loadMetaMaterial(selected);
+            } catch (SQLException ex) {
+                Logger.getLogger(IndexWindowController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+           
+        cmd_pripona.getItems().clear();
+        cmd_pripona.getItems().add("Bez filtru");
+        cmd_pripona.getItems().add(".txt");
+        cmd_pripona.getItems().add(".pdf");
+        cmd_pripona.getItems().add(".docx");
+        
+        cmd_pripona.valueProperty().addListener(e -> {
+            try {                
+                lstView_Materialy.getItems().clear();  
+                lstView_Materialy.getItems().addAll(dh.getStudijniMaterialyPredmetuPripona(cmb_PredmetFiltr.getSelectionModel().getSelectedItem().getId_predmet(), 
+                cmd_pripona.getSelectionModel().getSelectedItem()));  
+            } catch (SQLException ex) {
+                Logger.getLogger(IDAS2_SemestralniPrace.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
         
-              
-        
+        txt_vyhledavaniNazev.textProperty().addListener(e ->{
+            if (txt_vyhledavaniNazev.getText().equals("")) try {
+                material_fresh();
+            } catch (SQLException ex) {
+                Logger.getLogger(IndexWindowController.class.getName()).log(Level.SEVERE, null, ex);
+            }            
+        ObservableList<StudijniMaterial> materialy = FXCollections.observableArrayList();
+            lstView_Materialy.getItems().forEach(t -> {
+                if (t.getNazev().toLowerCase().contains(txt_vyhledavaniNazev.getText().toLowerCase())) {
+                    materialy.add(t);
+                }
+            });
+            lstView_Materialy.getItems().clear();
+            lstView_Materialy.getItems().addAll(materialy);
+        });
     }
     
     @FXML
@@ -770,16 +835,91 @@ public class IndexWindowController implements Initializable {
         material_fresh();
     }
     
+    @FXML
+    private void btn_Okomentovat_Clicked(ActionEvent event) {
+        selectedMaterial = lstView_Materialy.getSelectionModel().getSelectedItem();
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("DiskuseGUI.fxml"));
+            Parent root = (Parent) fxmlLoader.load();
+            login = new Stage();
+            login.setTitle("Kvízy");
+            login.setScene(new Scene(root));
+            login.setResizable(false);
+            login.show();
+        } catch (IOException e) {
+            throw new IllegalArgumentException();
+        }
+    }
+    
+    @FXML
+    private void btn_Kviz_Clicked(ActionEvent event) {
+        selectedMaterial = lstView_Materialy.getSelectionModel().getSelectedItem();
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("KvizyProchazeniGUI.fxml"));
+            Parent root = (Parent) fxmlLoader.load();
+            login = new Stage();
+            login.setTitle("Kvízy");
+            login.setScene(new Scene(root));
+            login.setResizable(false);
+            login.show();
+        } catch (IOException e) {
+            throw new IllegalArgumentException();
+        }
+    }
+    
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Metody pro záložku UCITELE">
     @FXML
     private void tab_Ucitele_Selected(Event event) throws SQLException {
+        lstView_Ucitele.setOnMouseClicked((MouseEvent click) -> {
+            if (click.getClickCount() == 2) {                
+                Uzivatel selected = lstView_Ucitele.getSelectionModel().getSelectedItem();
+                lst_UzivatelZpravy.getSelectionModel().select(selected);
+                tabPane.getSelectionModel().select(tab_zpravy);
+            }
+        });
+        
+        
+        
         if (!tab_Ucitele.isSelected()) {
             return;
         }
         lstView_Ucitele.itemsProperty().setValue(DataLoader.getUcitele());
     }
+    
+    @FXML
+    private void btn_NapsatZpravu_Clicked(ActionEvent event) {
+        //TODO Přesměruje na ZPRÁVY, kde mu to zvolí toho učitele v seznamu
+    }
+
+    
+//<editor-fold defaultstate="collapsed" desc="Metody pro záložku ZPRAVY">
+    @FXML
+    private void tab_Zpravy_Selected(Event event) throws SQLException {
+        if (!tab_zpravy.isSelected()) {
+            return;
+        }
+        lst_UzivatelZpravy.itemsProperty().setValue(DataLoader.getUsers());
+        
+        lst_UzivatelZpravy.getSelectionModel().selectedItemProperty().addListener(t ->{ 
+            txtArea_Chat.setText("");
+            selectedUserZpravy = lst_UzivatelZpravy.getSelectionModel().getSelectedItem();
+            try {
+                txtArea_Chat.setText(dh.getZpravyUzivateleString(selectedUserZpravy.getId_uzivatel(), logedUser.getId_uzivatel()));
+            } catch (SQLException ex) {
+                Logger.getLogger(IndexWindowController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+    }
+    
+    @FXML
+    private void btn_OdeslatZpravu_Clicked(ActionEvent event) throws SQLException {
+        dh.insertZprava(logedUser.getId_uzivatel(),selectedUserZpravy.getId_uzivatel(), txt_Zprava.getText());
+        txtArea_Chat.setText(dh.getZpravyUzivateleString(selectedUserZpravy.getId_uzivatel(), logedUser.getId_uzivatel()));
+        txt_Zprava.setText("");
+    }
+    
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Metody pro záložku ADMIN">
@@ -1362,21 +1502,14 @@ public class IndexWindowController implements Initializable {
 
 //</editor-fold>
 
-    @FXML
-    private void btn_Kviz_Clicked(ActionEvent event) {
-    }
-
-    @FXML
-    private void btn_NapsatZpravu_Clicked(ActionEvent event) {
-    }
-
-    @FXML
-    private void btn_ZobrazitDetaily_Clicked(ActionEvent event) {
-    }
-        
+       
     @FXML
     private void Combo_Table_Select(ActionEvent event) {
-    }
+    }   
+
+    
+
+
 
 
 

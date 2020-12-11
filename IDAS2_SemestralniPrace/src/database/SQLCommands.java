@@ -59,6 +59,10 @@ public class SQLCommands {
     final static String SELECT_UZIVATELE_byRole    = "SELECT * FROM UZIVATELE WHERE "
             + "ROLE_ID_ROLE = ";
     
+    final static String SELECT_HISTORIEKVIZU_user = "SELECT SCORE, VYTVORENO FROM HISTORIE_KVIZU WHERE UZIVATEL = ? AND KVIZ = ?";
+    
+    final static String SELECT_ZPRAVY_byusers = "SELECT OD, OBSAH, POSLANO FROM ZPRAVY WHERE (OD = ? AND PRO = ?) OR (PRO = ? AND OD = ?) ORDER BY POSLANO";
+    
     // *°*°**°*
     //  INSERT
     // *°*°**°*
@@ -130,6 +134,12 @@ public class SQLCommands {
             + "(UZIVATELE_ID_UZIVATEL, PREDMETY_ID_PREDMET) "
             + "VALUES (?, ?)";
     
+    final static String INSERT_historieKviz = "INSERT INTO HISTORIE_KVIZU (HISTORIE_KVIZU_ID, UZIVATEL, KVIZ, SCORE, VYTVORENO) "
+              + "VALUES (SEQ_KVIZ_HISTORIE_ID.NEXTVAL, ?, ?, ?, ?)";
+    
+    final static String INSERT_zprava = "INSERT INTO ZPRAVY (ID_ZPRAVA, OD, PRO, OBSAH, POSLANO) VALUES (SEQ_ZPRAVY.NEXTVAL, ?, ?, ?, ?)";
+    
+       
     // *°*°**°*
     //  UPDATE
     // *°*°**°*
@@ -185,5 +195,11 @@ public class SQLCommands {
             + "SET KATEGORIE_ID_KAT_STUD_MAT = ? WHERE STUDIJNI_MATERIALY_ID_STUD_MAT = ?";
     
     final static String UPDATE_KAT_OTAZ     = "UPDATE KAT_OTAZEK "
-            + "SET NAZEV = ?, POPIS = ? WHERE ID_KAT_OTAZKA = ?";    
+            + "SET NAZEV = ?, POPIS = ? WHERE ID_KAT_OTAZKA = ?"; 
+    
+    final static String UPDATE_OdpovedKomentare = "UPDATE KOMENTAR SET ODPOVED = ?, ODPOVED_BY = ? WHERE ID_KOMENTAR = ?";   
+    
+    
+    
+  
 }

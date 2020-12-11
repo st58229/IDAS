@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="510.0" prefWidth="501.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.DiskuseGUIController">
+   <children>
+      <ListView fx:id="OknoKomentaru" layoutX="14.0" layoutY="14.0" prefHeight="339.0" prefWidth="475.0" />
+      <TextField fx:id="txtField_Nazev" layoutX="14.0" layoutY="361.0" prefHeight="25.0" prefWidth="411.0" promptText="Název komentáře" />
+      <Button fx:id="btn_Odeslat" layoutX="432.0" layoutY="392.0" mnemonicParsing="false" onAction="#Odeslat_Clicked" text="Odeslat" />
+      <Button fx:id="btn_Odebrat" layoutX="14.0" layoutY="471.0" mnemonicParsing="false" onAction="#Odebrat_Clicked" prefHeight="25.0" prefWidth="475.0" text="Odebrat komentář" />
+      <TextField fx:id="txtField_Obsah" layoutX="14.0" layoutY="392.0" prefHeight="25.0" prefWidth="411.0" promptText="Zadejte obsah komentáře" />
+      <Button fx:id="btn_Odpoved" layoutX="14.0" layoutY="433.0" mnemonicParsing="false" onAction="#btn_Odpoved_Clicked" prefHeight="25.0" prefWidth="475.0" text="Odpovědět studentovi" />
+   </children>
+</AnchorPane>

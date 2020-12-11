@@ -1,4 +1,8 @@
 package data;
+import static GUI.IndexWindowController.dh;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Třída reprezentující data tabulky Komentar.
@@ -12,13 +16,17 @@ public class Komentar {
     private String obsah;
     private Integer komentar_id_komentar;   //FK
     private int studijni_materialy_id_stud_mat; //FK
+    private String odpoved;
+    private Integer odpoved_by; //FK
 
-    public Komentar(int id_komentar, String nazev, String obsah, int komentar_id_komentar, int studijni_materialy_id_stud_mat) {
+    public Komentar(int id_komentar, String nazev, String obsah, int komentar_id_komentar, int studijni_materialy_id_stud_mat, String odpoved, int odpoved_by) {
         this.id_komentar = id_komentar;
         this.nazev = nazev;
         this.obsah = obsah;
         this.komentar_id_komentar = komentar_id_komentar;
         this.studijni_materialy_id_stud_mat = studijni_materialy_id_stud_mat;
+        this.odpoved = odpoved;
+        this.odpoved_by = odpoved_by;
     }
     
     public Komentar(int id_komentar, int studijni_materialy_id_stud_mat) {
@@ -31,7 +39,17 @@ public class Komentar {
 
     @Override
     public String toString() {
-        return "|| " +nazev + " || " + obsah;
+        if (nazev == null) nazev = "Bez názvu";
+        if (odpoved == null) {
+            return "|| " +nazev + " || " + obsah;
+        }        
+        
+        try {        
+            return "|| " +nazev + " || " + obsah + " || Odpověd: " + odpoved + " Odpoveděl: " + dh.getLogin(odpoved_by);
+        } catch (SQLException ex) {
+            Logger.getLogger(Komentar.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "Chyba v hledání komentáře";
     }
 
     public int getId_komentar() {

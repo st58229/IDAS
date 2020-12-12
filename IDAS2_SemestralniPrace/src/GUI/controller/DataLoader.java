@@ -31,8 +31,7 @@ public class DataLoader {
         }
         return null;
     }
-
-    // TODO Nepevné stringy, ale vracet string z DB
+    
     public static String getRoleName() {
         switch (logedUser.getRole_id_role()) {
             case 1:

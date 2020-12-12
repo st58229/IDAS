@@ -66,7 +66,7 @@ public class GeneratorDialogu implements Initializable {
                         labelInteger.setTranslateY(position * 30);
                         TextField fieldInteger = new TextField();
                         fieldInteger.setText(Data.get(i + 2));
-                        fieldInteger.setTranslateX(100);
+                        fieldInteger.setTranslateX(120);
                         fieldInteger.setTranslateY(position * 30);
                         seznam.add(fieldInteger);
                         index++;
@@ -81,7 +81,7 @@ public class GeneratorDialogu implements Initializable {
                         labelText.setTranslateY(position * 30);
                         TextField fieldText = new TextField();
                         fieldText.setText(Data.get(i + 2));
-                        fieldText.setTranslateX(100);
+                        fieldText.setTranslateX(120);
                         fieldText.setTranslateY(position * 30);
                         seznam.add(fieldText);
                         index++;
@@ -93,7 +93,7 @@ public class GeneratorDialogu implements Initializable {
                         labelFile.setTranslateX(5);
                         labelFile.setTranslateY(position * 30);
                         Button loadFile = new Button("Load File");
-                        loadFile.setTranslateX(100);
+                        loadFile.setTranslateX(120);
                         loadFile.setTranslateY(position * 30);
                         loadFile.setPrefWidth(150);
 

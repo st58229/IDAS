@@ -64,6 +64,8 @@ public class KvizyProchazeniGUIController implements Initializable {
             btn_OdstraneniKvizu.setVisible(false);
             btn_pridatKviz.setVisible(false);
         }
+        
+        lbl_prumerKvizu.setText("Průměrná úspěšnost kvízu je: 0.0");
     
         try {
             ZobrazeniKvizu.getItems().addAll(dh.getKvizy(selectedMaterial.getId_stud_mat()));            
@@ -138,13 +140,20 @@ public class KvizyProchazeniGUIController implements Initializable {
             }
         }); 
         
-        kviz.vyplnitKviz(parsovanyData);
-        
-        //TODO refresh dat do listView z tabulky na DB
+        kviz.vyplnitKviz(parsovanyData);        
+       
         System.out.println(kviz.getVysledekKvizu()); 
         
         dh.insertKvizHistorie(logedUser.getId_uzivatel(), selectedKviz.getId_kviz(), kviz.getVysledekKvizu());
-        lst_HistorieKvizu.refresh();
+        
+        try {
+                lst_HistorieKvizu.getItems().clear();
+                selectedKviz = ZobrazeniKvizu.getSelectionModel().getSelectedItem();
+                lst_HistorieKvizu.getItems().addAll(dh.getHistorieKvizubyUser(logedUser.getId_uzivatel(), selectedKviz.getId_kviz()));
+                lbl_prumerKvizu.setText("Průměrná úspěšnost kvízu je: " + dh.getUspesnostKvizu(logedUser.getId_uzivatel(), selectedKviz.getId_kviz()));
+            } catch (SQLException ex) {               
+                Logger.getLogger(KvizyProchazeniGUIController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     @FXML

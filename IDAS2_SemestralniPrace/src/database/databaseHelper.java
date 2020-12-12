@@ -947,19 +947,17 @@ public class databaseHelper {
             String cesta_k_souboru, String typ_souboru, int pocet_stran, 
             Date platnost_do, Date datum_vytvoreni, String vytvoren_uziv, int predmety_id_predmet) throws SQLException {
         Connection conn = OracleConnector.getConnection();
-        CallableStatement stmt = conn.prepareCall("BEGIN MATERIALY_INSRT_UPD(? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); END;");
+        CallableStatement stmt = conn.prepareCall("BEGIN MATERIALY_INSRT_UPD(? ,?, ?, ?, ?, ?, ?, ?, ?, ?); END;");
         stmt.setString(1, Nazev);
         stmt.setBinaryStream(2, Soubor);
         stmt.setString(3, cesta_k_souboru);
         stmt.setString(4, typ_souboru);
         stmt.setInt(5, pocet_stran); 
-        stmt.setDate(6, platnost_do);
-        stmt.setDate(7, datum_vytvoreni);
-        stmt.setString(8, vytvoren_uziv);
-        stmt.setNull(9, java.sql.Types.VARCHAR);
-        stmt.setNull(10, java.sql.Types.DATE);
-        stmt.setInt(11, predmety_id_predmet);
-        stmt.setInt(12, 0);
+        stmt.setNString(6, null);
+        stmt.setDate(7, platnost_do);
+        stmt.setDate(8, datum_vytvoreni);
+        stmt.setString(9, vytvoren_uziv);
+        stmt.setInt(10, predmety_id_predmet);
         stmt.execute();
         conn.commit();        
     }
@@ -1724,8 +1722,6 @@ public class databaseHelper {
         stmt.registerOutParameter(1, java.sql.Types.NUMERIC); 
         stmt.execute();
         return stmt.getDouble(1); 
-        //return -1;
-        //TODO nefunguje
     }
 
     public String getLogin(int aInt) throws SQLException {

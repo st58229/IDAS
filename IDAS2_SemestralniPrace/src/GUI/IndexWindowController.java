@@ -311,8 +311,7 @@ public class IndexWindowController implements Initializable {
     private void loadMetaMaterial(StudijniMaterial selected) throws SQLException{       
         
         if (selected == null) {
-            return;
-            //TODO možná promazat data, aby tam nezůstaly meta posledního zvolenýho souboru, nwm.
+            return; 
         }
         label_Mat_Nazev.setText(selected.getNazev());
         label_Mat_DostupneDo.setText("Dostupné do: " + selected.getPlatnost_do().toString());
@@ -443,6 +442,7 @@ public class IndexWindowController implements Initializable {
             throw new IllegalArgumentException();
         }
         loadDataProfil();
+        tabPane.getSelectionModel().select(tab_Profil);
     }
     
     @FXML
@@ -465,6 +465,7 @@ public class IndexWindowController implements Initializable {
     private void menu_Logout_Clicked(ActionEvent event) throws SQLException {
         logedUser = dh.getUser("quest", "quest");
         loadDataProfil();
+        tabPane.getSelectionModel().select(tab_Profil);
     }
     
     @FXML
@@ -520,6 +521,7 @@ public class IndexWindowController implements Initializable {
     
     @FXML
     private void btn_ResetAvatar_Clicked(ActionEvent event) {
+        avatar = null;
         avatarID = 1;
         oldAvatarID = logedUser.getAvatar_id_avatar();
         try {
@@ -625,7 +627,10 @@ public class IndexWindowController implements Initializable {
             } catch (SQLException ex) {
                 Logger.getLogger(IDAS2_SemestralniPrace.class.getName()).log(Level.SEVERE, null, ex);
             }
-        });        
+        });  
+        
+        data = DataLoader.getSubjects();
+        cmb_PredmetFiltr.itemsProperty().setValue(DataLoader.getSubjects());
         
         //cmb_PredmetFiltr.itemsProperty().setValue(DataLoader.getSubjects());
         cmd_UcitelFiltr.itemsProperty().setValue(DataLoader.getUcitele());
@@ -705,8 +710,7 @@ public class IndexWindowController implements Initializable {
     }
     
     @FXML
-    private void btn_DeleteMaterial_Clicked(ActionEvent event) throws SQLException {
-        //TODO dialog o potvrzení! To samé ADMIN !!
+    private void btn_DeleteMaterial_Clicked(ActionEvent event) throws SQLException {  
         int id_stud_mat = (lstView_Materialy.getSelectionModel().getSelectedItem()).getId_stud_mat();
 
         dh.deleteData("KAT_ST_MAT", "STUDIJNI_MATERIALY_ID_STUD_MAT", id_stud_mat);
@@ -764,18 +768,6 @@ public class IndexWindowController implements Initializable {
 
         dh.deleteData("KAT_ST_MAT", "STUDIJNI_MATERIALY_ID_STUD_MAT", akt_stud_mat.getId_stud_mat());
 
-        /*
-        if (kategorie1.isSelected()) {
-            dh.insertKatStmat(akt_stud_mat.getId_stud_mat(), 1);
-        }
-        if (kategorie2.isSelected()) {
-            dh.insertKatStmat(akt_stud_mat.getId_stud_mat(), 2);
-        }
-        if (kategorie3.isSelected()) {
-            dh.insertKatStmat(akt_stud_mat.getId_stud_mat(), 3);
-        }*/
-        
-        //TODO Kategorie!!
         dh.insertKatStmat(akt_stud_mat.getId_stud_mat(), 3);
 
         material_fresh();
@@ -783,6 +775,9 @@ public class IndexWindowController implements Initializable {
     
     @FXML
     private void btn_MaterialPridatClicked(ActionEvent event) throws SQLException, FileNotFoundException {
+        try {
+            
+        
         GeneratorDialogu dialog = new GeneratorDialogu();
         ObservableList<String> hodnoty = FXCollections.observableArrayList();
         LocalDate date = LocalDate.now();
@@ -820,20 +815,11 @@ public class IndexWindowController implements Initializable {
 
         int mat = dh.getLastNumberofSequence("SEQ_STUD_MAT_ID") - 1;
 
-        /*if (kategorie1.isSelected()) {
-            cntrl.dh.insertKatStmat(mat, 1);
-        }
-        if (kategorie2.isSelected()) {
-            cntrl.dh.insertKatStmat(mat, 2);
-        }
-        if (kategorie3.isSelected()) {
-            cntrl.dh.insertKatStmat(mat, 3);
-        }*/
-        
-        //TODO 
         dh.insertKatStmat(mat, 3);
 
         material_fresh();
+        } catch (Exception e) {
+        }
     }
     
     @FXML
@@ -906,9 +892,9 @@ public class IndexWindowController implements Initializable {
         lst_UzivatelZpravy.itemsProperty().setValue(DataLoader.getUsers());
         
         lst_UzivatelZpravy.getSelectionModel().selectedItemProperty().addListener(t ->{ 
-            txtArea_Chat.setText("");
-            selectedUserZpravy = lst_UzivatelZpravy.getSelectionModel().getSelectedItem();
+            txtArea_Chat.setText("");            
             try {
+                selectedUserZpravy = lst_UzivatelZpravy.getSelectionModel().getSelectedItem();
                 txtArea_Chat.setText(dh.getZpravyUzivateleString(selectedUserZpravy.getId_uzivatel(), logedUser.getId_uzivatel()));
             } catch (SQLException ex) {
                 Logger.getLogger(IndexWindowController.class.getName()).log(Level.SEVERE, null, ex);
